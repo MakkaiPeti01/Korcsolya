@@ -58,9 +58,20 @@ namespace Korcsolya
         {
             Console.WriteLine();
             Console.Write("\tKérem a versenyző nevét: ");
-            OsszPontszam(Console.ReadLine());
+            string be = Console.ReadLine();
+            OsszPontszam(be);
+            if (OsszPontszam(be) > 0)
+            {
+                Console.WriteLine("6. Feladat");
+                Console.WriteLine($"\tA versenyző pontszáma: {OsszPontszam(be)}");
+            }
+            else
+            {
+                Console.WriteLine("5. Feladat");
+                Console.WriteLine("\tIlyen nevű versenyző nem volt");
+            }
         }
-        static void OsszPontszam(string nev)
+        static double OsszPontszam(string nev)
         {
             //            Készítsen metódust OsszPontszam néven, amely egy versenyző összpontszámát adja meg,
             //azaz a rövidprogram pontszám és a döntőben elért pontszámának összegét!Ha nem jutott be
@@ -69,32 +80,19 @@ namespace Korcsolya
             double ossz = 0;
             foreach (var i in rovidprogram)
             {
-                foreach (var d in donto)
+                if (i.Nev==nev)
                 {
-                    if (i.Nev == nev)
+                    ossz += i.Pont;
+                    foreach (var d in donto)
                     {
-                        ossz = i.Pont;
-                    }
-                    else if (d.Nev == nev)
-                    {
-                        ossz = d.Pont + i.Pont;
-                    }
-                    else if (!d.Nev.Contains(nev) && i.Nev.Contains(nev))
-                    {
-                        ossz = 0;
+                        if (d.Nev==nev)
+                        {
+                            ossz += d.Pont;
+                        }
                     }
                 }
             }
-            if (ossz > 0)
-            {
-                Console.WriteLine("6. Feladat");
-                Console.WriteLine($"\tA versenyző pontszáma: {ossz}");
-            }
-            else
-            {
-                Console.WriteLine("5. Feladat");
-                Console.WriteLine("\tIlyen nevű versenyző nem volt");
-            }
+            return ossz;
         }
         static void Hetes()
         {
@@ -124,26 +122,27 @@ namespace Korcsolya
         }
         static void Nyolcas()
         {
-            //há ez nem jött össze :'(
-            List<string> eredmeny = new List<string>();
             StreamWriter iro = new StreamWriter("vegeredmeny.csv");
-            double ossz = 0;
+            Dictionary<string, double> adatok = new Dictionary<string, double>();
+            Dictionary<string, string> orszag = new Dictionary<string, string>();
             foreach (var i in rovidprogram)
             {
-                foreach (var d in donto)
+                if (!adatok.ContainsKey(i.Nev))
                 {
-                    if (i.Nev.Contains(i.Nev))
-                    {
-                        ossz = i.Pont;
-                       // eredmeny.Add();
-                    }
-                    else if (d.Nev == i.Nev)
-                    {
-                        ossz = d.Pont + i.Pont;
-                    }
+                    adatok.Add(i.Nev, OsszPontszam(i.Nev));
+                    orszag.Add(i.Nev, i.Orszag);
                 }
             }
-                    iro.Close();
+            int c = 0;
+            int helyezes = 1;
+            var rendezes = adatok.OrderByDescending(a => a.Value);
+            foreach (var i in rendezes)
+            {
+                iro.WriteLine($"{helyezes};{i.Key};{orszag[i.Key]};{i.Value}");
+                c++;
+                helyezes++;
+            }
+            iro.Close();
         }
         static void Main(string[] args)
         {

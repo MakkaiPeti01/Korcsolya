@@ -1,0 +1,19 @@
+double ossz = 0;
+            foreach (var i in rovidprogram)
+            {
+                foreach (var d in donto)
+                {
+                    if (i.Nev == nev)
+                    {
+                        ossz = i.Pont;
+                    }
+                    else if (d.Nev == nev)
+                    {
+                        ossz = d.Pont + i.Pont;
+                    }
+                    else if (!d.Nev.Contains(nev) && i.Nev.Contains(nev))
+                    {
+                        ossz = 0;
+                    }
+                }
+            }
